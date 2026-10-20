@@ -2,13 +2,11 @@ import { FormEvent, useState } from 'react'
 import {
   ArrowRight,
   BadgeCheck,
-  BarChart3,
   BriefcaseBusiness,
   Check,
   ChevronDown,
   CircleDollarSign,
   Handshake,
-  LockKeyhole,
   MessageCircle,
   Route,
   ShieldCheck,
@@ -23,87 +21,109 @@ import documentsVisual from './assets/official-documents-visual.png'
 const navItems = [
   { href: '#fit', label: 'Кому подходит' },
   { href: '#flow', label: 'Как работает' },
-  { href: '#cabinet', label: 'Кабинет' },
-  { href: '#faq', label: 'FAQ' },
+  { href: '#role', label: 'Ваша роль' },
+  { href: '#faq', label: 'Вопросы' },
 ]
 
 const partnerTypes = [
   {
     icon: BriefcaseBusiness,
-    title: 'Юридические лица',
-    text: 'Компании, сервисы, школы и площадки с клиентским потоком.',
+    title: 'Компании',
+    text: 'Рекомендуйте АСО своим клиентам и сотрудникам.',
   },
   {
     icon: Users,
-    title: 'Физические лица',
-    text: 'Партнёры, которые рекомендуют обучение знакомым и аудитории.',
+    title: 'Частные лица',
+    text: 'Помогайте знакомым выбрать автошколу.',
   },
   {
     icon: Route,
-    title: 'Профи рынка',
-    text: 'Инструкторы, менеджеры, медиаторы и локальные представители.',
+    title: 'Авторы и специалисты',
+    text: 'Рассказывайте об АСО своей аудитории и клиентам.',
   },
 ]
 
 const benefits = [
-  'Прозрачные условия',
-  'Минимум администрирования',
-  'Персональный контакт',
-  'Статусы в кабинете',
-  'Выплаты по договорённости',
+  'Условия участия до старта',
+  'Согласованный способ рекомендаций',
+  'Понятный порядок учёта учеников',
+  'Правила расчёта вознаграждения',
+  'Ответы на вопросы об участии',
 ]
 
 const flowSteps = [
   {
-    title: 'Заявка',
-    text: 'Партнёр оставляет данные и формат работы.',
+    title: 'Знакомство',
+    text: 'Расскажите, кому вы хотите рекомендовать АСО.',
   },
   {
     title: 'Условия',
-    text: 'АСО фиксирует правила сотрудничества.',
+    text: 'Обсудите вознаграждение и порядок работы.',
   },
   {
-    title: 'Передача',
-    text: 'Заявки попадают в понятный маршрут обработки.',
+    title: 'Рекомендация',
+    text: 'Рекомендуйте обучение согласованным способом.',
   },
   {
-    title: 'Статусы',
-    text: 'Партнёр видит движение и итог по условиям.',
+    title: 'Вознаграждение',
+    text: 'Получайте выплаты по условиям программы.',
   },
 ]
 
 const conditions = [
-  'Вознаграждение рассчитывается индивидуально',
-  'Выплаты идут по согласованному циклу',
-  'Статистика доступна в личном кабинете',
-  'Поддержка сопровождает подключение',
+  'Размер и условия вознаграждения',
+  'Как учитывать ваши рекомендации',
+  'Когда и как получать выплаты',
+  'К кому обращаться с вопросами',
 ]
 
 const faqs = [
   {
     question: 'Это франшиза?',
-    answer: 'Нет. Это партнёрская программа для привлечения клиентов в систему АСО.',
+    answer: 'Нет. Вы рекомендуете обучение в АСО. Открывать автошколу и организовывать обучение не нужно.',
   },
   {
-    question: 'Есть фиксированная сумма?',
-    answer: 'На странице её нет: условия зависят от формата партнёра и подтверждаются отдельно.',
+    question: 'Какое вознаграждение я получу?',
+    answer: 'Размер, основание для начисления и порядок выплат нужно согласовать с АСО до начала работы.',
   },
   {
-    question: 'Кто может подключиться?',
-    answer: 'Юридическое лицо, физическое лицо или профессиональный участник рынка.',
+    question: 'Можно участвовать без компании?',
+    answer: 'Да, программа рассчитана и на частных лиц. Расскажите, как вы планируете рекомендовать обучение, и обсудите условия участия.',
   },
   {
-    question: 'Форма уже отправляет заявки?',
-    answer: 'Пока форма локальная. Канал отправки подключается после утверждения контактов.',
+    question: 'Как учтут мою рекомендацию?',
+    answer: 'Перед первой рекомендацией согласуйте с АСО способ передачи и учёта обращений. Это поможет связать ученика с вашей рекомендацией.',
   },
 ]
 
 function App() {
-  const [submitted, setSubmitted] = useState(false)
+  const [draft, setDraft] = useState('')
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'manual'>('idle')
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setSubmitted(true)
+    const data = new FormData(event.currentTarget)
+    const name = String(data.get('name') ?? '').trim()
+    const phone = String(data.get('phone') ?? '').trim()
+    const source = String(data.get('source') ?? '').trim()
+    setDraft([
+      'Здравствуйте! Хочу обсудить участие в реферальной программе АСО.',
+      `Меня зовут: ${name}.`,
+      `Формат участия: ${data.get('partnerType')}.`,
+      `Телефон для связи: ${phone}.`,
+      ...(source ? [`Планирую рекомендовать обучение: ${source}.`] : []),
+      'Расскажите, пожалуйста, об условиях участия и вознаграждении.',
+    ].join('\n'))
+    setCopyState('idle')
+  }
+
+  async function copyDraft() {
+    try {
+      await navigator.clipboard.writeText(draft)
+      setCopyState('copied')
+    } catch {
+      setCopyState('manual')
+    }
   }
 
   return (
@@ -131,10 +151,10 @@ function App() {
         <section className="hero">
           <div className="content-shell hero-grid">
             <div className="hero-copy">
-              <h1>Партнёрская программа АСО</h1>
+              <h1>Реферальная программа АСО</h1>
               <p className="hero-lead">
-                Привлекайте клиентов в автошколу через понятную систему: условия,
-                статусы и расчёты в одном контуре.
+                Рекомендуйте обучение в АСО и получайте вознаграждение
+                на согласованных условиях.
               </p>
               <div className="hero-actions">
                 <a className="button button--primary button--large" href="#lead">
@@ -144,35 +164,31 @@ function App() {
                 <a className="text-link" href="#flow">Как это работает</a>
               </div>
               <div className="hero-points" aria-label="Ключевые принципы">
-                <span><Check aria-hidden="true" /> без обещаний цифр</span>
-                <span><Check aria-hidden="true" /> условия фиксируются</span>
-                <span><Check aria-hidden="true" /> статусы видны</span>
+                <span><Check aria-hidden="true" /> Для частных лиц</span>
+                <span><Check aria-hidden="true" /> Для компаний</span>
+                <span><Check aria-hidden="true" /> Для авторов</span>
               </div>
             </div>
 
-            <aside className="partner-panel" aria-label="Форма партнёрского подключения">
+            <aside className="partner-panel" aria-label="Суть реферальной программы">
               <div className="partner-panel__head">
-                <span>Подключение</span>
+                <span>Партнёрство с АСО</span>
                 <Handshake aria-hidden="true" />
               </div>
-              <div className="partner-selector">
-                <span>Вы</span>
-                <strong>Юридическое лицо</strong>
-                <ChevronDown aria-hidden="true" />
-              </div>
-              <div className="lead-lines" aria-hidden="true">
-                <i />
-                <i />
-                <i />
+              <div className="partner-intro">
+                <span>Ваш вклад</span>
+                <strong>Рекомендация обучения</strong>
+                <p>Знакомым, клиентам или своей аудитории.</p>
               </div>
               <div className="status-row status-row--blue">
                 <BadgeCheck aria-hidden="true" />
-                <span>Заявка принята</span>
+                <span>Обучение — на стороне АСО</span>
               </div>
               <div className="status-row status-row--red">
                 <CircleDollarSign aria-hidden="true" />
-                <span>Итог по условиям</span>
+                <span>Вам — вознаграждение</span>
               </div>
+              <p className="partner-panel__note">Условия участия обсудим до старта.</p>
             </aside>
           </div>
         </section>
@@ -180,8 +196,7 @@ function App() {
         <section className="fit-section" id="fit">
           <div className="content-shell">
             <div className="section-heading compact">
-              <span>Не скидочная акция</span>
-              <h2>Партнёрство как управляемый канал</h2>
+              <h2>Кому подойдёт программа</h2>
             </div>
 
             <div className="partner-types">
@@ -200,7 +215,7 @@ function App() {
           <div className="content-shell benefits-layout">
             <div className="benefits-title">
               <img src={slidersIcon} alt="" />
-              <h2>Меньше хаоса. Больше прозрачности.</h2>
+              <h2>Понятно с первого шага</h2>
             </div>
 
             <div className="benefit-list" aria-label="Преимущества сотрудничества">
@@ -217,8 +232,7 @@ function App() {
         <section className="flow-section" id="flow">
           <div className="content-shell">
             <div className="section-heading">
-              <span>Процесс</span>
-              <h2>Короткий маршрут подключения</h2>
+              <h2>Как стать партнёром</h2>
             </div>
 
             <div className="flow-track">
@@ -233,27 +247,26 @@ function App() {
           </div>
         </section>
 
-        <section className="cabinet-section" id="cabinet">
+        <section className="cabinet-section" id="role">
           <div className="content-shell cabinet-grid">
             <div className="cabinet-copy">
-              <span>Личный кабинет</span>
-              <h2>Статусы вместо переписки</h2>
+              <h2>Вы рекомендуете. АСО обучает.</h2>
               <p>
-                Партнёр видит заявки, этапы и согласованные итоги. Без лишних таблиц
-                и ручного контроля.
+                Рассказывайте об обучении тем, кому оно нужно.
+                Занятия, инструкторы и работа с учениками — задача автошколы.
               </p>
             </div>
 
             <div className="cabinet-visual">
               <img className="system-visual" src={systemVisual} alt="" />
-              <div className="status-board" aria-label="Условный интерфейс личного кабинета">
+              <div className="status-board" aria-label="Распределение задач">
                 <div>
-                  <BarChart3 aria-hidden="true" />
-                  <strong>Поток заявок</strong>
+                  <Handshake aria-hidden="true" />
+                  <strong>Ваша роль в программе</strong>
                 </div>
-                <span>Получена</span>
-                <span>В работе</span>
-                <span>Итог согласован</span>
+                <span>Рекомендовать АСО</span>
+                <span>Следовать условиям программы</span>
+                <span>Получать вознаграждение</span>
               </div>
             </div>
           </div>
@@ -263,8 +276,7 @@ function App() {
           <div className="content-shell conditions-grid">
             <div>
               <div className="section-heading compact">
-                <span>Условия</span>
-                <h2>Без неподтверждённых цифр</h2>
+                <h2>Что согласуем до старта</h2>
               </div>
               <div className="condition-list">
                 {conditions.map((item) => (
@@ -279,41 +291,54 @@ function App() {
         <section className="lead-section" id="lead">
           <div className="content-shell lead-grid">
             <div className="lead-copy">
-              <span>Заявка</span>
-              <h2>Получить условия партнёрства</h2>
-              <p>Оставьте формат. Детали подтвердит команда АСО.</p>
+              <h2>Обсудим участие?</h2>
+              <p>Расскажите, как хотите рекомендовать АСО. Подготовьте обращение для команды.</p>
             </div>
 
-            <form className="lead-form" onSubmit={handleSubmit}>
+            <form className="lead-form" onSubmit={handleSubmit} onChange={() => { setDraft(''); setCopyState('idle') }}>
               <label>
-                <span>Вы</span>
-                <select defaultValue="Юридическое лицо">
-                  <option>Юридическое лицо</option>
-                  <option>Физическое лицо</option>
-                  <option>Профессиональный партнёр</option>
+                <span>Формат участия</span>
+                <select name="partnerType" defaultValue="Частное лицо">
+                  <option>Частное лицо</option>
+                  <option>Компания</option>
+                  <option>Автор или специалист</option>
                 </select>
               </label>
               <label>
-                <span>Название или имя</span>
-                <input type="text" name="name" placeholder="Как к вам обращаться" required />
+                <span>Как к вам обращаться</span>
+                <input type="text" name="name" autoComplete="name" maxLength={100} required />
               </label>
               <label>
                 <span>Телефон</span>
-                <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required />
+                <input type="tel" name="phone" autoComplete="tel" inputMode="tel" minLength={10} maxLength={24} required />
               </label>
               <label>
-                <span>Источник клиентов</span>
-                <input type="text" name="source" placeholder="Компания, аудитория, рекомендации" />
+                <span id="source-label">Кому планируете рекомендовать АСО</span>
+                <input type="text" name="source" maxLength={200} aria-labelledby="source-label" aria-describedby="source-hint" />
+                <small id="source-hint">Знакомым, клиентам или аудитории. Необязательно.</small>
               </label>
               <button className="button button--primary button--wide" type="submit">
-                Узнать условия
+                Подготовить обращение
                 <ArrowRight aria-hidden="true" />
               </button>
-              <p className="form-note">
-                {submitted
-                  ? 'Данные сохранены в форме. Канал отправки подключается отдельно.'
-                  : 'Форма локальная: отправка подключается после утверждения контактов.'}
-              </p>
+              <p className="form-note">Получите текст, который можно отправить представителю АСО.</p>
+              {draft && (
+                <div className="draft-result">
+                  <h3>Текст обращения готов</h3>
+                  <p>Скопируйте его и отправьте своему контакту в АСО.</p>
+                  <label>
+                    <span>Ваше обращение</span>
+                    <textarea value={draft} readOnly rows={8} onFocus={(event) => event.currentTarget.select()} />
+                  </label>
+                  <button className="button button--primary button--wide" type="button" onClick={copyDraft}>
+                    Скопировать обращение
+                  </button>
+                  <p className="form-note" role="status">
+                    {copyState === 'copied' && 'Текст скопирован. Его можно вставить в сообщение.'}
+                    {copyState === 'manual' && 'Выделите текст обращения и скопируйте его вручную.'}
+                  </p>
+                </div>
+              )}
             </form>
           </div>
         </section>
@@ -321,8 +346,7 @@ function App() {
         <section className="faq-section" id="faq">
           <div className="content-shell faq-grid">
             <div className="section-heading compact">
-              <span>FAQ</span>
-              <h2>Коротко о важном</h2>
+              <h2>Вопросы об участии</h2>
             </div>
             <div className="faq-list">
               {faqs.map((item) => (
@@ -341,9 +365,9 @@ function App() {
         <section className="final-cta">
           <div className="content-shell final-inner">
             <img src={logoWhite} alt="" />
-            <h2>Подключите партнёрский канал без лишнего шума</h2>
+            <h2>Рекомендуйте АСО. Станьте нашим партнёром.</h2>
             <a className="button button--primary button--large" href="#lead">
-              Начать
+              Узнать условия
               <MessageCircle aria-hidden="true" />
             </a>
           </div>
@@ -353,8 +377,8 @@ function App() {
       <footer className="site-footer">
         <div className="content-shell footer-inner">
           <span>АСО Автошкола</span>
-          <span>Партнёрская программа</span>
-          <span><LockKeyhole aria-hidden="true" /> Контакты и backend подключаются отдельно</span>
+          <span>Реферальная программа</span>
+          <a href="#flow">Как стать партнёром <ArrowRight aria-hidden="true" /></a>
         </div>
       </footer>
     </>
